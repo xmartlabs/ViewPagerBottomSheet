@@ -1,12 +1,15 @@
 # ViewPagerBottomSheet
 
-Use ViewPagers in Bottom Sheets and Bottom Sheet Dialogs!
+This is a forked project from [ViewPagerBottomSheet](https://github.com/laenger/ViewPagerBottomSheet) which adds support for ViewPager2 in Bottom Sheets and Bottom Sheet Dialogs! 
+ViewPager is allowed but the library uses reflection to operate. However, ViewPager2 doesn't need reflection, so we strongly recommend use ViewPager2 instead of ViewPager. 
 
 ## Example
 
-This repository features an example app that demonstrates nested ViewPagers inside a bottom sheet:
+This repository features an example app that demonstrates nested ViewPagers2 inside a bottom sheet:
 
 ![Example App](assets/viewpager.gif)
+
+
 
 ## Use for your project
 
@@ -14,7 +17,7 @@ Add the maven repo url to your `build.gradle`:
 
 ```groovy
 repositories {
-    maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
+   maven { url 'https://jitpack.io' }
 }
 ```
 
@@ -22,7 +25,7 @@ Add the library to the dependencies:
 
 ```groovy
 dependencies {
-    compile "biz.laenger.android:vpbs:0.0.6"
+    implementation 'com.github.xmartlabs:ViewPagerBottomSheet:-SNAPSHOT'
 }
 ```
 
@@ -48,7 +51,7 @@ public class DialogFragment extends ViewPagerBottomSheetDialogFragment {
         super.setupDialog(dialog, style);
         final View contentView = View.inflate(getContext(), R.layout.dialog_bottom_sheet, null);
 
-        ViewPager viewPager = (ViewPager) contentView.findViewById(R.id.viewpager);
+        ViewPager2 viewPager = (ViewPager2) contentView.findViewById(R.id.viewpager);
         // ...
         BottomSheetUtils.setupViewPager(viewPager);
 

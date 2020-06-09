@@ -1,28 +1,36 @@
 package biz.laenger.android.vpbs.example;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
+
 import biz.laenger.android.vpbs.BottomSheetUtils;
-import biz.laenger.android.vpbs.example.PagerAdapter.TabItem;
+import biz.laenger.android.vpbs.example.ViewPagerAdapter.TabItem;
 import biz.laenger.android.vpbs.example.fragments.DialogFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.tabs) TabLayout tabLayout;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.viewpager) ViewPager viewPager;
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.viewpager)
+    ViewPager viewPager;
 
-    @BindView(R.id.bottom_sheet_toolbar) Toolbar bottomSheetToolbar;
-    @BindView(R.id.bottom_sheet_tabs) TabLayout bottomSheetTabLayout;
-    @BindView(R.id.bottom_sheet_viewpager) ViewPager bottomSheetViewPager;
+    @BindView(R.id.bottom_sheet_toolbar)
+    Toolbar bottomSheetToolbar;
+    @BindView(R.id.bottom_sheet_tabs)
+    TabLayout bottomSheetTabLayout;
+    @BindView(R.id.bottom_sheet_viewpager)
+    ViewPager bottomSheetViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +44,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupMainViewPager() {
-        final PagerAdapter sectionsPagerAdapter = new PagerAdapter(getSupportFragmentManager(), this, TabItem.RECYCLER, TabItem.VIEW_PAGER, TabItem.NESTED_SCROLL);
+        final ViewPagerAdapter sectionsPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this, TabItem.RECYCLER, TabItem.VIEW_PAGER, TabItem.NESTED_SCROLL);
         viewPager.setAdapter(sectionsPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
 
     private void setupBottomSheet() {
         bottomSheetToolbar.setTitle(R.string.bottom_sheet_title);
-        final PagerAdapter sectionsPagerAdapter = new PagerAdapter(getSupportFragmentManager(), this, TabItem.NESTED_SCROLL, TabItem.VIEW_PAGER, TabItem.RECYCLER, TabItem.RECYCLER);
+        final ViewPagerAdapter sectionsPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this, TabItem.NESTED_SCROLL, TabItem.VIEW_PAGER, TabItem.RECYCLER, TabItem.RECYCLER);
         bottomSheetViewPager.setOffscreenPageLimit(1);
         bottomSheetViewPager.setAdapter(sectionsPagerAdapter);
         bottomSheetTabLayout.setupWithViewPager(bottomSheetViewPager);

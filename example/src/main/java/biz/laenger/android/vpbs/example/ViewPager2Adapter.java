@@ -1,17 +1,17 @@
 package biz.laenger.android.vpbs.example;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import biz.laenger.android.vpbs.example.fragments.NestedScrollFragment;
 import biz.laenger.android.vpbs.example.fragments.RecyclerFragment;
 import biz.laenger.android.vpbs.example.fragments.ViewPagerFragment;
 
-public class PagerAdapter extends FragmentPagerAdapter {
-
+public class ViewPager2Adapter extends FragmentStateAdapter {
     public enum TabItem {
         RECYCLER(RecyclerFragment.class, R.string.tab_recycler),
         NESTED_SCROLL(NestedScrollFragment.class, R.string.tab_nested_scroll),
@@ -29,15 +29,21 @@ public class PagerAdapter extends FragmentPagerAdapter {
     private final TabItem[] tabItems;
     private final Context context;
 
-    public PagerAdapter(FragmentManager fragmentManager, Context context, TabItem... tabItems) {
-        super(fragmentManager);
-        this.context = context;
+    public ViewPager2Adapter(Fragment fragment, TabItem... tabItems) {
+        super(fragment);
+        this.context = fragment.requireContext();
         this.tabItems = tabItems;
     }
 
+    @NonNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         return newInstance(tabItems[position].fragmentClass);
+    }
+
+    @Override
+    public int getItemCount() {
+        return tabItems.length;
     }
 
     private Fragment newInstance(Class<? extends Fragment> fragmentClass) {
@@ -48,14 +54,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    @Override
     public CharSequence getPageTitle(int position) {
         return context.getString(tabItems[position].titleResId);
     }
-
-    @Override
-    public int getCount() {
-        return tabItems.length;
-    }
-
 }

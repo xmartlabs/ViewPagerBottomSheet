@@ -16,23 +16,10 @@
 
 package biz.laenger.android.vpbs;
 
-import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.RestrictTo;
-import android.support.annotation.VisibleForTesting;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.math.MathUtils;
-import android.support.v4.view.AbsSavedState;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPagerUtils;
-import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -42,10 +29,25 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.VisibleForTesting;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.math.MathUtils;
+import androidx.core.view.ViewCompat;
+import androidx.customview.view.AbsSavedState;
+import androidx.customview.widget.ViewDragHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 /**
  * An interaction behavior plugin for a child view of {@link CoordinatorLayout} to make it work as
@@ -105,11 +107,14 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
      */
     public static final int STATE_HIDDEN = 5;
 
-    /** @hide */
+    /**
+     * @hide
+     */
     @RestrictTo(LIBRARY_GROUP)
     @IntDef({STATE_EXPANDED, STATE_COLLAPSED, STATE_DRAGGING, STATE_SETTLING, STATE_HIDDEN})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface State {}
+    public @interface State {
+    }
 
     /**
      * Peek at the 16:9 ratio keyline of its parent.
@@ -199,12 +204,12 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
     }
 
     @Override
-    public Parcelable onSaveInstanceState(CoordinatorLayout parent, V child) {
+    public Parcelable onSaveInstanceState(@NonNull CoordinatorLayout parent, @NonNull V child) {
         return new SavedState(super.onSaveInstanceState(parent, child), mState);
     }
 
     @Override
-    public void onRestoreInstanceState(CoordinatorLayout parent, V child, Parcelable state) {
+    public void onRestoreInstanceState(@NonNull CoordinatorLayout parent, @NonNull V child, @NonNull Parcelable state) {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(parent, child, ss.getSuperState());
         // Intermediate states are restored as collapsed state
@@ -216,9 +221,9 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
     }
 
     @Override
-    public boolean onLayoutChild(CoordinatorLayout parent, V child, int layoutDirection) {
+    public boolean onLayoutChild(@NonNull CoordinatorLayout parent, @NonNull V child, int layoutDirection) {
         if (ViewCompat.getFitsSystemWindows(parent) && !ViewCompat.getFitsSystemWindows(child)) {
-            ViewCompat.setFitsSystemWindows(child, true);
+            child.setFitsSystemWindows(true);
         }
         int savedTop = child.getTop();
         // First let the parent lay it out
@@ -255,7 +260,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
     }
 
     @Override
-    public boolean onInterceptTouchEvent(CoordinatorLayout parent, V child, MotionEvent event) {
+    public boolean onInterceptTouchEvent(@NonNull CoordinatorLayout parent, V child, @NonNull MotionEvent event) {
         if (!child.isShown()) {
             mIgnoreEvents = true;
             return false;
@@ -307,7 +312,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
     }
 
     @Override
-    public boolean onTouchEvent(CoordinatorLayout parent, V child, MotionEvent event) {
+    public boolean onTouchEvent(@NonNull CoordinatorLayout parent, V child, @NonNull MotionEvent event) {
         if (!child.isShown()) {
             return false;
         }
@@ -337,15 +342,15 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
     }
 
     @Override
-    public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, V child,
-            View directTargetChild, View target, int nestedScrollAxes) {
+    public boolean onStartNestedScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull V child,
+                                       @NonNull View directTargetChild, @NonNull View target, int nestedScrollAxes) {
         mNestedScrolled = false;
         return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
     }
 
     @Override
-    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, V child, View target, int dx,
-            int dy, int[] consumed) {
+    public void onNestedPreScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull V child, @NonNull View target, int dx,
+                                  int dy, @NonNull int[] consumed) {
         View scrollingChild = mNestedScrollingChildRef.get();
         if (target != scrollingChild) {
             return;
@@ -380,7 +385,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
     }
 
     @Override
-    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, V child, View target) {
+    public void onStopNestedScroll(@NonNull CoordinatorLayout coordinatorLayout, V child, @NonNull View target) {
         if (child.getTop() == mMinOffset) {
             setStateInternal(STATE_EXPANDED);
             return;
@@ -427,15 +432,15 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
     }
 
     @Override
-    public boolean onNestedPreFling(CoordinatorLayout coordinatorLayout, V child, View target,
-            float velocityX, float velocityY) {
+    public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout, @NonNull V child, @NonNull View target,
+                                    float velocityX, float velocityY) {
         return target == mNestedScrollingChildRef.get() &&
                 (mState != STATE_EXPANDED ||
                         super.onNestedPreFling(coordinatorLayout, child, target,
                                 velocityX, velocityY));
     }
 
-    void invalidateScrollingChild() {
+    public void invalidateScrollingChild() {
         final View scrollingChild = findScrollingChild(mViewRef.get());
         mNestedScrollingChildRef = new WeakReference<>(scrollingChild);
     }
@@ -473,7 +478,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
      * Gets the height of the bottom sheet when it is collapsed.
      *
      * @return The height of the collapsed bottom sheet in pixels, or {@link #PEEK_HEIGHT_AUTO}
-     *         if the sheet is configured to peek automatically at 16:9 ratio keyline
+     * if the sheet is configured to peek automatically at 16:9 ratio keyline
      * @attr ref android.support.design.R.styleable#BottomSheetBehavior_Layout_behavior_peekHeight
      */
     public final int getPeekHeight() {
@@ -612,30 +617,56 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
 
     @VisibleForTesting
     View findScrollingChild(View view) {
-        if (ViewCompat.isNestedScrollingEnabled(view)) {
+        if (ViewCompat.isNestedScrollingEnabled(view) && view.isShown()) {
             return view;
         }
+
         if (view instanceof ViewPager) {
             ViewPager viewPager = (ViewPager) view;
-            View currentViewPagerChild = ViewPagerUtils.getCurrentView(viewPager);
-            if (currentViewPagerChild == null) {
-                return null;
+            View currentViewPagerChild = getCurrentViewWithVP(viewPager);
+            if (currentViewPagerChild != null) {
+                return findScrollingChild(currentViewPagerChild);
             }
+        }
 
-            View scrollingChild = findScrollingChild(currentViewPagerChild);
-            if (scrollingChild != null) {
-                return scrollingChild;
+        if (view instanceof ViewPager2) {
+            ViewPager2 viewPager2 = (ViewPager2) view;
+            View currentViewPagerChild = getCurrentViewWithVP2(viewPager2);
+            if (currentViewPagerChild != null) {
+                return findScrollingChild(currentViewPagerChild);
             }
-        } else if (view instanceof ViewGroup) {
+        }
+
+        if (view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup) view;
-            for (int i = 0, count = group.getChildCount(); i < count; i++) {
-                View scrollingChild = findScrollingChild(group.getChildAt(i));
+            int i = 0;
+
+            for (int count = group.getChildCount(); i < count; ++i) {
+                View scrollingChild = this.findScrollingChild(group.getChildAt(i));
                 if (scrollingChild != null) {
                     return scrollingChild;
                 }
             }
         }
+
         return null;
+
+    }
+
+    @Nullable
+    private View getCurrentViewWithVP(ViewPager viewPager) {
+        return BottomSheetUtils.getCurrentView(viewPager);
+    }
+
+    @Nullable
+    private View getCurrentViewWithVP2(ViewPager2 viewPager) {
+        final int currentItem = viewPager.getCurrentItem();
+        View child = viewPager.getChildAt(0);
+        if (child instanceof RecyclerView) {
+            child = ((RecyclerView) child).getLayoutManager().findViewByPosition(currentItem);
+        }
+
+        return child;
     }
 
     private float getYVelocity() {
@@ -665,7 +696,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
     private final ViewDragHelper.Callback mDragCallback = new ViewDragHelper.Callback() {
 
         @Override
-        public boolean tryCaptureView(View child, int pointerId) {
+        public boolean tryCaptureView(@NonNull View child, int pointerId) {
             if (mState == STATE_DRAGGING) {
                 return false;
             }
@@ -683,7 +714,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
         }
 
         @Override
-        public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
+        public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
             dispatchOnSlide(top);
         }
 
@@ -695,7 +726,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
         }
 
         @Override
-        public void onViewReleased(View releasedChild, float xvel, float yvel) {
+        public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             int top;
             @State int targetState;
             if (yvel < 0 && Math.abs(yvel) > mMinimumVelocity && Math.abs(yvel) > Math.abs(xvel)) {
@@ -729,7 +760,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
         }
 
         @Override
-        public int clampViewPositionVertical(View child, int top, int dy) {
+        public int clampViewPositionVertical(@NonNull View child, int top, int dy) {
             return MathUtils.clamp(top, mMinOffset, mHideable ? mParentHeight : mMaxOffset);
         }
 
@@ -739,7 +770,7 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
         }
 
         @Override
-        public int getViewVerticalDragRange(View child) {
+        public int getViewVerticalDragRange(@NonNull View child) {
             if (mHideable) {
                 return mParentHeight - mMinOffset;
             } else {
