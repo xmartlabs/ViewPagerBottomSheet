@@ -2,15 +2,13 @@ package biz.laenger.android.vpbs;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetDialogFragment;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class ViewPagerBottomSheetDialogFragment extends BottomSheetDialogFragment {
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new ViewPagerBottomSheetDialog(getContext(), getTheme());
     }
-
 }

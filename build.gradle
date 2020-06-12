@@ -1,39 +1,17 @@
+ext {
+    compileSdkVersion = 29
+    buildToolsVersion = '29.0.3'
+    targetSdkVersion = 29
+}
+
 buildscript {
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.2'
+        classpath 'com.android.tools.build:gradle:4.0.0'
     }
-}
-
-ext {
-    runningOnJenkins = System.getenv('JENKINS_URL') != null
-    nexusReleasesRepository = getEnvOrProperty('NEXUS_RELEASES_REPOSITORY')
-    nexusSnapshotsRepository = getEnvOrProperty('NEXUS_SNAPSHOTS_REPOSITORY')
-    nexusUsername = getEnvOrProperty('NEXUS_USERNAME')
-    nexusPassword = getEnvOrProperty('NEXUS_PASSWORD')
-
-    developers = [
-            [
-                    id   : 'laenger',
-                    name : 'Christian Langer',
-                    email: 'mail@laenger.biz'
-            ]
-    ]
-    scm = [
-            connection         : 'scm:git:git@github.com:laenger/ViewPagerBottomSheet.git',
-            developerConnection: 'scm:git:git@github.com:laenger/ViewPagerBottomSheet.git',
-            url                : 'https://github.com/laenger/ViewPagerBottomSheet'
-    ]
-
-    compileSdkVersion = 29
-    buildToolsVersion = '29.0.0'
-    targetSdkVersion = 29
-
-    supportVersion = '28.0.0'
-    butterknifeVersion = '8.8.1'
 }
 
 subprojects {
@@ -45,17 +23,8 @@ subprojects {
     }
 
     apply from: "${rootDir}/config/common.gradle"
-    plugins.withId('com.android.library') {
-        afterEvaluate {
-            project.apply from: "${rootDir}/config/publish-android.gradle"
-        }
-    }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-def getEnvOrProperty(String name) {
-    return System.getenv(name) ?: project.hasProperty(name) ? project[name] : '';
 }
